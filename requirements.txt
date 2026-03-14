@@ -1,0 +1,33 @@
+# MeowBot — AI cat companion robot
+# License: Apache-2.0
+
+# ── Core AI ──────────────────────────────────────────
+anthropic>=0.84.0          # Claude API
+sentence-transformers>=5.0 # Embeddings for memory
+
+# ── Speech Recognition ───────────────────────────────
+mlx-whisper>=0.4.0         # Whisper on Apple Silicon (MLX)
+faster-whisper>=1.1.0      # Whisper on x86 (CTranslate2)
+PyAudio>=0.2.14            # Microphone input
+sounddevice>=0.5.0         # Audio I/O
+soundfile>=0.13.0          # Audio file handling
+
+# ── Voice Activity Detection ─────────────────────────
+torch>=2.0                 # Silero VAD runtime
+webrtcvad-wheels>=2.0.14   # WebRTC VAD (backup)
+
+# ── Text-to-Speech ───────────────────────────────────
+pyttsx3>=2.90              # Offline TTS (macOS/Linux)
+edge-tts>=7.0              # Microsoft Edge TTS (online, higher quality)
+
+# ── Memory ───────────────────────────────────────────
+chromadb>=1.5.0            # Vector database for semantic memory
+
+# ── WebSocket Server ─────────────────────────────────
+websockets>=15.0           # WebSocket for EchoEar communication
+uvicorn>=0.40.0            # ASGI server
+
+# ── Utilities ────────────────────────────────────────
+python-dotenv>=1.0.0       # .env loader
+numpy>=2.0                 # Numeric arrays
+scipy>=1.15.0              # WAV file I/O
