@@ -27,5 +27,9 @@ memory/prospective/*.db
 .DS_Store
 Thumbs.db
 
+# Root-level duplicates (dev copies, not packages)
+/display_agent.py
+/ws_client.py
+
 # Claude
 .claude/

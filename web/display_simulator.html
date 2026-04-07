@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AisthOS Display Simulator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  h1 { font-size: 20px; color: #7C6AF7; margin-bottom: 8px; }
+  .subtitle { color: #666; font-size: 13px; margin-bottom: 24px; }
+
+  /* Round display simulator */
+  .device-frame {
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    background: #000;
+    border: 4px solid #333;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 40px rgba(124, 106, 247, 0.2);
+    margin-bottom: 24px;
+  }
+
+  .display {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.5s ease;
+    background: white;
+  }
+
+  .display img {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    transition: opacity 0.3s ease;
+  }
+
+  .display.dark { background: #0d1117; }
+  .display.pink { background: #fce4ec; }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; }
+  .status-dot.connected { background: #4ade80; }
+  .status-label { font-size: 13px; color: #888; }
+  .frame-label {
+    background: #7C6AF7;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* Touch controls */
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    max-width: 400px;
+    margin-bottom: 16px;
+  }
+  .ctrl-btn {
+    padding: 10px 8px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #16213e;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .ctrl-btn:hover { background: #7C6AF7; color: white; border-color: #7C6AF7; }
+  .ctrl-btn:active { transform: scale(0.95); }
+
+  /* Emotion direct buttons */
+  .emotions {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    max-width: 500px;
+    margin-bottom: 16px;
+  }
+  .emo-btn {
+    padding: 8px 4px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 11px;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .emo-btn:hover { color: #7C6AF7; border-color: #7C6AF7; }
+  .emo-btn.active { background: #7C6AF7; color: white; border-color: #7C6AF7; }
+
+  /* Connection */
+  .connect-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .connect-row input {
+    background: #16213e;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 240px;
+  }
+  .connect-row button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .btn-connect { background: #4ade80; color: #000; }
+  .btn-disconnect { background: #e94560; color: #fff; }
+
+  /* Log */
+  .log {
+    width: 500px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #0d1117;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #888;
+  }
+  .log .msg { margin-bottom: 4px; }
+  .log .msg.display-msg { color: #7C6AF7; }
+  .log .msg.touch-msg { color: #4ade80; }
+  .log .msg.error-msg { color: #e94560; }
+</style>
+</head>
+<body>
+
+<h1>AisthOS Display Simulator</h1>
+<p class="subtitle">Simulates the 360×360 round device screen. Test emotions and touch interactions.</p>
+
+<div class="status-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <span class="status-label" id="statusLabel">Disconnected</span>
+  <span class="frame-label" id="frameLabel">—</span>
+</div>
+
+<div class="device-frame">
+  <div class="display" id="display">
+    <img id="emotionImg" src="" alt="Aisth emotion">
+  </div>
+</div>
+
+<p class="subtitle">Touch gestures (simulate):</p>
+<div class="controls">
+  <button class="ctrl-btn" onclick="sendTouch('tap')">👆 Tap</button>
+  <button class="ctrl-btn" onclick="sendTouch('double_tap')">👆👆 Double</button>
+  <button class="ctrl-btn" onclick="sendTouch('long_press')">✋ Long Press</button>
+  <button class="ctrl-btn" onclick="sendTouch('pet')">🐾 Pet</button>
+  <button class="ctrl-btn" onclick="sendTouch('swipe_up')">⬆️ Swipe Up</button>
+  <button class="ctrl-btn" onclick="sendTouch('swipe_down')">⬇️ Swipe Down</button>
+  <button class="ctrl-btn" onclick="sendTouch('circle')">⭕ Circle</button>
+  <button class="ctrl-btn" onclick="sendTouch('poke_repeated')">👉 Poke!</button>
+</div>
+
+<p class="subtitle">Direct emotion frames:</p>
+<div class="emotions" id="emotionButtons"></div>
+
+<div class="connect-row">
+  <input type="text" id="wsUrl" value="ws://127.0.0.1:8765" placeholder="WebSocket URL">
+  <button class="btn-connect" onclick="connect()">Connect</button>
+  <button class="btn-disconnect" onclick="disconnect()">Disconnect</button>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+// Emotion frames — filenames match DisplayFrame enum values
+const FRAMES = {
+  neutral:   { emoji: '😐', bg: '', label: 'Neutral' },
+  happy:     { emoji: '😊', bg: '', label: 'Happy' },
+  listening: { emoji: '👂', bg: '', label: 'Listening' },
+  thinking:  { emoji: '🤔', bg: '', label: 'Thinking' },
+  sleeping:  { emoji: '😴', bg: 'dark', label: 'Sleeping' },
+  surprised: { emoji: '😲', bg: '', label: 'Surprised' },
+  sad:       { emoji: '😢', bg: '', label: 'Sad' },
+  love:      { emoji: '😻', bg: 'pink', label: 'Love' },
+  annoyed:   { emoji: '😤', bg: '', label: 'Annoyed' },
+  excited:   { emoji: '⚡', bg: '', label: 'Excited' },
+  curious:   { emoji: '🧐', bg: '', label: 'Curious' },
+  greeting:  { emoji: '👋', bg: '', label: 'Hello!' },
+  boot:      { emoji: '🚀', bg: 'dark', label: 'Booting...' },
+  nyan:      { emoji: '🌈', bg: '', label: 'NYAN!' },
+};
+
+let ws = null;
+let currentFrame = 'neutral';
+
+// Build emotion buttons
+const btnContainer = document.getElementById('emotionButtons');
+Object.entries(FRAMES).forEach(([key, info]) => {
+  const btn = document.createElement('button');
+  btn.className = 'emo-btn';
+  btn.textContent = info.emoji + ' ' + info.label;
+  btn.onclick = () => setFrame(key);
+  btn.id = 'emo-' + key;
+  btnContainer.appendChild(btn);
+});
+
+function log(msg, cls = '') {
+  const el = document.getElementById('log');
+  const div = document.createElement('div');
+  div.className = 'msg ' + cls;
+  div.textContent = new Date().toLocaleTimeString() + ' ' + msg;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+}
+
+function setFrame(frame, transition = 'crossfade') {
+  const info = FRAMES[frame] || FRAMES.neutral;
+  const display = document.getElementById('display');
+
+  // Update background
+  display.className = 'display ' + (info.bg || '');
+
+  // Show emoji as placeholder (replace with actual images when loaded on device)
+  display.innerHTML = '<div style="font-size:120px;line-height:1;user-select:none">' + info.emoji + '</div>';
+
+  // Update label
+  document.getElementById('frameLabel').textContent = info.label;
+
+  // Update active button
+  document.querySelectorAll('.emo-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('emo-' + frame);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  currentFrame = frame;
+  log('Display → ' + info.label + ' (' + transition + ')', 'display-msg');
+}
+
+function sendTouch(gesture) {
+  log('Touch: ' + gesture, 'touch-msg');
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'touch_event', gesture: gesture }));
+  } else {
+    // Simulate locally without server
+    const responses = {
+      tap: 'surprised', double_tap: 'listening', long_press: 'sleeping',
+      pet: 'love', swipe_up: 'curious', swipe_down: 'neutral',
+      circle: 'happy', poke_repeated: 'annoyed'
+    };
+    setFrame(responses[gesture] || 'neutral', 'instant');
+  }
+}
+
+function connect() {
+  const url = document.getElementById('wsUrl').value;
+  log('Connecting to ' + url + '...');
+
+  ws = new WebSocket(url);
+
+  ws.onopen = () => {
+    document.getElementById('statusDot').classList.add('connected');
+    document.getElementById('statusLabel').textContent = 'Connected';
+    log('Connected!', 'touch-msg');
+    // Send hello
+    ws.send(JSON.stringify({ type: 'hello', version: 1 }));
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'display') {
+        setFrame(msg.frame, msg.transition || 'crossfade');
+      } else if (msg.type === 'emotion') {
+        log('Emotion: ' + msg.primary + ' (' + Math.round(msg.intensity * 100) + '%)', 'display-msg');
+      } else if (msg.type === 'pong') {
+        // Heartbeat OK
+      } else {
+        log('← ' + msg.type + ': ' + JSON.stringify(msg).substring(0, 80));
+      }
+    } catch (e) {
+      log('Binary data: ' + event.data.byteLength + ' bytes');
+    }
+  };
+
+  ws.onclose = () => {
+    document.getElementById('statusDot').classList.remove('connected');
+    document.getElementById('statusLabel').textContent = 'Disconnected';
+    log('Disconnected', 'error-msg');
+  };
+
+  ws.onerror = (e) => {
+    log('Error: ' + e, 'error-msg');
+  };
+}
+
+function disconnect() {
+  if (ws) ws.close();
+}
+
+// Start with boot
+setFrame('boot', 'fade_in');
+setTimeout(() => setFrame('neutral'), 2000);
+</script>
+
+</body>
+</html>

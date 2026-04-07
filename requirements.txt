@@ -27,7 +27,11 @@ chromadb>=1.5.0            # Vector database for semantic memory
 websockets>=15.0           # WebSocket for EchoEar communication
 uvicorn>=0.40.0            # ASGI server
 
+# ── Web Search ───────────────────────────────────────
+duckduckgo-search>=7.0     # Web search (DuckDuckGo)
+
 # ── Utilities ────────────────────────────────────────
 python-dotenv>=1.0.0       # .env loader
 numpy>=2.0                 # Numeric arrays
 scipy>=1.15.0              # WAV file I/O
+PyYAML>=6.0                # YAML parsing (tests)

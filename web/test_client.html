@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeowBot Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a2e; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; }
+
+  .header { background: #16213e; padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #0f3460; }
+  .header h1 { font-size: 18px; color: #e94560; }
+  .status { width: 10px; height: 10px; border-radius: 50%; background: #555; }
+  .status.connected { background: #4ade80; }
+  .status.connecting { background: #facc15; }
+
+  .connect-bar { background: #16213e; padding: 8px 20px; display: flex; gap: 8px; border-bottom: 1px solid #0f3460; }
+  .connect-bar input { flex: 1; background: #1a1a2e; border: 1px solid #0f3460; color: #e0e0e0; padding: 6px 10px; border-radius: 4px; font-size: 14px; }
+  .connect-bar button { padding: 6px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+  .btn-connect { background: #4ade80; color: #000; }
+  .btn-disconnect { background: #e94560; color: #fff; }
+
+  /* ── Tabs ── */
+  .tab-bar { background: #16213e; display: flex; border-bottom: 2px solid #0f3460; }
+  .tab-btn { padding: 10px 24px; background: transparent; border: none; color: #888; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+  .tab-btn:hover { color: #e0e0e0; }
+  .tab-btn.active { color: #e94560; border-bottom-color: #e94560; }
+  .tab-content { display: none; flex: 1; overflow: hidden; }
+  .tab-content.active { display: flex; }
+
+  /* ── Main Layout: Display + Chat ── */
+  .main-layout { flex: 1; display: flex; overflow: hidden; }
+
+  .display-panel {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; background: #0d0d1a; min-width: 400px;
+  }
+
+  #catDisplay { width: 360px; height: 360px; border-radius: 50%; background: #000; box-shadow: 0 0 30px rgba(233, 69, 96, 0.2), 0 0 60px rgba(233, 69, 96, 0.1); cursor: pointer; }
+  .display-label { margin-top: 12px; font-size: 12px; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+  .display-state { margin-top: 4px; font-size: 11px; color: #e94560; text-transform: uppercase; letter-spacing: 1px; min-height: 16px; }
+  .emotion-indicator { margin-top: 6px; font-size: 13px; color: #aaa; min-height: 18px; transition: color 0.5s; }
+  .emotion-indicator .emoji { font-size: 16px; }
+
+  .chat-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .chat { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+  .msg { padding: 8px 12px; border-radius: 8px; max-width: 80%; word-wrap: break-word; font-size: 14px; line-height: 1.4; }
+  .msg.user { background: #0f3460; align-self: flex-end; }
+  .msg.bot { background: #16213e; border: 1px solid #0f3460; align-self: flex-start; }
+  .msg.system { background: transparent; color: #888; font-size: 12px; align-self: center; }
+  .msg .label { font-size: 11px; color: #888; margin-bottom: 2px; }
+
+  .input-bar { background: #16213e; padding: 12px 20px; display: flex; gap: 8px; align-items: center; border-top: 1px solid #0f3460; }
+  .input-bar input { flex: 1; background: #1a1a2e; border: 1px solid #0f3460; color: #e0e0e0; padding: 10px 14px; border-radius: 8px; font-size: 14px; }
+  .input-bar input:focus { outline: none; border-color: #e94560; }
+  .btn-send { background: #e94560; color: #fff; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  .btn-mic { background: #0f3460; color: #fff; width: 48px; height: 48px; border-radius: 50%; border: 2px solid #4ade80; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .btn-mic:hover { border-color: #e94560; }
+  .btn-mic.listening { border-color: #facc15; background: #1a1a2e; }
+  .btn-mic.speaking { background: #e94560; border-color: #e94560; animation: pulse 0.8s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.08); } }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .volume-bar { height: 3px; background: #0f3460; border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .volume-fill { height: 100%; background: #4ade80; width: 0%; transition: width 0.1s; }
+
+  /* ── Options Panel ── */
+  .options-panel { margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid #0f3460; border-radius: 8px; width: 100%; max-width: 360px; }
+  .options-panel summary { cursor: pointer; font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; user-select: none; }
+  .options-panel summary:hover { color: #e94560; }
+  .option-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; font-size: 13px; }
+  .option-label { color: #aaa; }
+  .option-label small { display: block; color: #666; font-size: 11px; margin-top: 2px; }
+
+  /* Toggle switch */
+  .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #333; border-radius: 22px; transition: 0.3s; }
+  .toggle-slider:before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: #888; border-radius: 50%; transition: 0.3s; }
+  .toggle input:checked + .toggle-slider { background: #e94560; }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(18px); background: #fff; }
+
+  /* Model select */
+  .model-select { background: #1a1a2e; border: 1px solid #0f3460; color: #e0e0e0; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+  .model-select:focus { outline: none; border-color: #e94560; }
+
+  /* ── Skills Dashboard ── */
+  .skills-layout { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .skills-header { padding: 16px 20px 8px; display: flex; align-items: center; justify-content: space-between; }
+  .skills-header h2 { font-size: 16px; color: #e0e0e0; }
+  .skills-header .cat-count { font-size: 12px; color: #888; }
+
+  .skills-grid { flex: 1; overflow-y: auto; padding: 12px 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; align-content: start; }
+
+  .skill-card {
+    background: #16213e; border: 1px solid #0f3460; border-radius: 10px; padding: 14px;
+    display: flex; flex-direction: column; gap: 8px; transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .skill-card:hover { border-color: #e94560; }
+  .skill-card.disabled { opacity: 0.5; }
+
+  .skill-card-header { display: flex; align-items: center; justify-content: space-between; }
+  .skill-icon { font-size: 24px; }
+  .skill-card-header .toggle { transform: scale(0.9); }
+
+  .skill-name { font-size: 14px; font-weight: 600; color: #e0e0e0; }
+  .skill-desc { font-size: 11px; color: #888; line-height: 1.4; }
+  .skill-meta { display: flex; gap: 8px; align-items: center; }
+  .skill-version { font-size: 10px; color: #555; background: #0d0d1a; padding: 2px 6px; border-radius: 4px; }
+  .skill-category { font-size: 10px; color: #e94560; background: rgba(233,69,96,0.1); padding: 2px 6px; border-radius: 4px; }
+
+  .skill-status { font-size: 11px; color: #4ade80; min-height: 16px; }
+  .skill-status.off { color: #555; }
+
+  /* ── Test Dashboard ── */
+  .test-layout { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .test-controls { padding: 16px 20px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #0f3460; }
+  .btn-test { padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+  .btn-test-run { background: #4ade80; color: #000; }
+  .btn-test-demo { background: #e94560; color: #fff; }
+  .btn-test:disabled { opacity: 0.4; cursor: not-allowed; }
+  .test-status-text { font-size: 12px; color: #888; }
+
+  .test-progress-bar { height: 4px; background: #0f3460; margin: 0 20px; border-radius: 2px; overflow: hidden; }
+  .test-progress-fill { height: 100%; background: #4ade80; width: 0%; transition: width 0.5s; }
+
+  .test-results { flex: 1; overflow-y: auto; padding: 12px 20px; display: flex; flex-direction: column; gap: 6px; }
+
+  .test-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #16213e; border: 1px solid #0f3460; border-radius: 8px; }
+  .test-item-icon { font-size: 20px; width: 28px; text-align: center; }
+  .test-item-info { flex: 1; }
+  .test-item-name { font-size: 13px; font-weight: 600; }
+  .test-item-detail { font-size: 11px; color: #888; margin-top: 2px; }
+  .test-item-status { font-size: 20px; width: 28px; text-align: center; }
+  .test-item-time { font-size: 11px; color: #555; min-width: 50px; text-align: right; }
+
+  .test-item.passed { border-color: #4ade80; }
+  .test-item.error { border-color: #e94560; }
+  .test-item.running { border-color: #facc15; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #facc15; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+  .test-log { margin-top: 8px; padding: 12px; background: #0d0d1a; border: 1px solid #0f3460; border-radius: 8px; max-height: 150px; overflow-y: auto; font-family: 'SF Mono', 'Consolas', monospace; font-size: 11px; color: #888; }
+  .test-log-entry { margin-bottom: 2px; }
+  .test-log-entry .time { color: #555; }
+  .test-log-entry.pass { color: #4ade80; }
+  .test-log-entry.fail { color: #e94560; }
+
+  /* ── Responsive ── */
+  @media (max-width: 800px) {
+    .main-layout { flex-direction: column; }
+    .display-panel { min-width: unset; padding: 12px; }
+    #catDisplay { width: 240px; height: 240px; }
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="status" id="statusDot"></div>
+  <h1>MeowBot Dashboard</h1>
+  <span id="statusText" style="font-size:12px; color:#888;">Disconnected</span>
+</div>
+
+<div class="connect-bar">
+  <input type="text" id="wsUrl" value="ws://localhost:8765" placeholder="ws://host:port">
+  <button class="btn-connect" id="btnConnect" onclick="toggleConnection()">Connect</button>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('chat')">🐱 Чат</button>
+  <button class="tab-btn" onclick="switchTab('skills')">⚡ Навыки</button>
+  <button class="tab-btn" onclick="switchTab('test')">🧪 Тест</button>
+</div>
+
+<!-- ═══ TAB 1: CHAT ═══ -->
+<div class="tab-content active" id="tab-chat">
+  <div class="main-layout">
+    <div class="display-panel">
+      <canvas id="catDisplay" width="360" height="360"></canvas>
+      <div class="display-label">EchoEar 1.85" IPS 360x360</div>
+      <div class="display-state" id="displayState"></div>
+      <div class="emotion-indicator" id="emotionIndicator"></div>
+      <details class="options-panel" id="optionsPanel">
+        <summary>⚙ Настройки</summary>
+        <div class="option-row">
+          <div class="option-label">Интернет<small>Поиск в сети (родительский контроль)</small></div>
+          <label class="toggle"><input type="checkbox" id="optInternet" onchange="sendOptions()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="option-row">
+          <div class="option-label">AI-модель<small>Haiku = быстро, Sonnet = умнее</small></div>
+          <select class="model-select" id="optModel" onchange="sendOptions()">
+            <option value="haiku" selected>Haiku (быстрый)</option>
+            <option value="sonnet">Sonnet (умный)</option>
+          </select>
+        </div>
+      </details>
+    </div>
+    <div class="chat-panel">
+      <div class="chat" id="chat"></div>
+      <div class="input-bar">
+        <div>
+          <button class="btn-mic" id="btnMic" onclick="toggleMic()" disabled title="Click to start/stop listening">MIC</button>
+          <div class="volume-bar"><div class="volume-fill" id="volumeFill"></div></div>
+        </div>
+        <input type="text" id="msgInput" placeholder="Write a message..." onkeydown="if(event.key==='Enter')sendText()" disabled>
+        <button class="btn-send" id="btnSend" onclick="sendText()" disabled>Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: SKILLS ═══ -->
+<div class="tab-content" id="tab-skills">
+  <div class="skills-layout">
+    <div class="skills-header">
+      <h2>Навыки MeowBot</h2>
+      <span class="cat-count" id="skillsCount">0 навыков</span>
+    </div>
+    <div class="skills-grid" id="skillsGrid">
+      <div style="color:#555; text-align:center; padding:40px;">Подключитесь к серверу для загрузки навыков</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: TEST ═══ -->
+<div class="tab-content" id="tab-test">
+  <div class="test-layout">
+    <div class="test-controls">
+      <button class="btn-test btn-test-run" id="btnTestRun" onclick="runTest()" disabled>▶ Self-Test</button>
+      <button class="btn-test btn-test-demo" id="btnTestDemo" onclick="runDemo()" disabled>⟳ Demo Mode</button>
+      <span class="test-status-text" id="testStatusText">Готов к тестированию</span>
+    </div>
+    <div class="test-progress-bar"><div class="test-progress-fill" id="testProgressFill"></div></div>
+    <div class="test-results" id="testResults">
+      <div style="color:#555; text-align:center; padding:40px;">Нажмите Self-Test для проверки навыков</div>
+    </div>
+    <div class="test-log" id="testLog"></div>
+  </div>
+</div>
+
+<script src="display.js"></script>
+<script>
+const TARGET_SAMPLE_RATE = 16000;
+const VAD_THRESHOLD = 0.015;
+const SILENCE_TIMEOUT_MS = 1500;
+
+let ws = null;
+let audioContext = null;
+let mediaStream = null;
+let scriptNode = null;
+let isListening = false;
+let isSpeaking = false;
+let audioChunks = [];
+let silenceTimer = null;
+let nativeSampleRate = 48000;
+let testTotal = 0;
+let testPassed = 0;
+
+const chat = document.getElementById('chat');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+const btnConnect = document.getElementById('btnConnect');
+const btnMic = document.getElementById('btnMic');
+const btnSend = document.getElementById('btnSend');
+const msgInput = document.getElementById('msgInput');
+const volumeFill = document.getElementById('volumeFill');
+const displayStateEl = document.getElementById('displayState');
+
+// ── Tab Navigation ──
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`).classList.add('active');
+  if (name === 'skills' && ws && ws.readyState === 1) {
+    ws.send(JSON.stringify({ type: 'get_skills' }));
+  }
+}
+
+// ── Display Agent ──
+const display = new DisplayAgent(document.getElementById('catDisplay'), {
+  onTouchEvent: (event) => {
+    if (ws && ws.readyState === 1) ws.send(JSON.stringify(event));
+    displayStateEl.textContent = event.gesture;
+    setTimeout(() => { displayStateEl.textContent = display.state; }, 1000);
+  }
+});
+display.start();
+
+setInterval(() => {
+  if (!display._touchReaction) displayStateEl.textContent = display.state;
+}, 500);
+
+function addMessage(text, type = 'system') {
+  const div = document.createElement('div');
+  div.className = `msg ${type}`;
+  if (type === 'bot') div.innerHTML = `<div class="label">MeowBot</div>${escapeHtml(text)}`;
+  else if (type === 'user') div.innerHTML = `<div class="label">You</div>${escapeHtml(text)}`;
+  else div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+function setStatus(state) {
+  statusDot.className = `status ${state}`;
+  statusText.textContent = state === 'connected' ? 'Connected' : state === 'connecting' ? 'Connecting...' : 'Disconnected';
+  const connected = state === 'connected';
+  btnConnect.textContent = connected ? 'Disconnect' : 'Connect';
+  btnConnect.className = connected ? 'btn-disconnect' : 'btn-connect';
+  msgInput.disabled = !connected;
+  btnSend.disabled = !connected;
+  btnMic.disabled = !connected;
+  document.getElementById('btnTestRun').disabled = !connected;
+  document.getElementById('btnTestDemo').disabled = !connected;
+}
+
+function toggleConnection() { if (ws && ws.readyState <= 1) ws.close(); else connect(); }
+
+function connect() {
+  const url = document.getElementById('wsUrl').value;
+  setStatus('connecting');
+  addMessage(`Connecting to ${url}...`);
+  ws = new WebSocket(url);
+
+  ws.onopen = () => {
+    setStatus('connected');
+    addMessage('Connected');
+    ws.send(JSON.stringify({ type: 'hello', version: 1, audio_params: { format: 'pcm', sample_rate: 16000, channels: 1 } }));
+  };
+
+  ws.onmessage = (event) => {
+    if (event.data instanceof Blob) { audioChunks.push(event.data); return; }
+    const msg = JSON.parse(event.data);
+    display.onWebSocketMessage(msg);
+
+    switch (msg.type) {
+      case 'hello':
+        addMessage(`Session: ${msg.session_id.substring(0, 8)}...`);
+        sendOptions();
+        ws.send(JSON.stringify({ type: 'get_skills' }));
+        break;
+      case 'stt': if (msg.text) addMessage(`[STT] ${msg.text}`); break;
+      case 'llm': addMessage(msg.text, 'bot'); break;
+      case 'tts_start': audioChunks = []; break;
+      case 'tts_end': playAudio(); break;
+      case 'emotion': updateEmotionIndicator(msg); break;
+      case 'options_updated':
+        document.getElementById('optInternet').checked = !!msg.internet;
+        document.getElementById('optModel').value = msg.model || 'haiku';
+        addMessage(`Options: internet=${msg.internet ? 'ON' : 'OFF'}, model=${msg.model}`);
+        break;
+      case 'skills_list': renderSkills(msg.skills); break;
+      case 'test_start': onTestStart(msg); break;
+      case 'test_progress': onTestProgress(msg); break;
+      case 'test_end': onTestEnd(); break;
+      case 'error': addMessage(`Error: ${msg.message}`); break;
+    }
+  };
+
+  ws.onclose = () => { setStatus(''); if (isListening) toggleMic(); addMessage('Disconnected'); display.setOff(); };
+  ws.onerror = () => { setStatus(''); addMessage('Connection error'); display.setOff(); };
+}
+
+function sendText() {
+  const text = msgInput.value.trim();
+  if (!text || !ws) return;
+  addMessage(text, 'user');
+  ws.send(JSON.stringify({ type: 'text', content: text }));
+  msgInput.value = '';
+  display.setThinking();
+}
+
+function playAudio() {
+  if (audioChunks.length === 0) return;
+  const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  audio.onplay = () => { display.setState('speaking'); };
+  audio.onended = () => { display.setState('idle'); URL.revokeObjectURL(url); };
+  audio.onerror = () => { display.setState('idle'); URL.revokeObjectURL(url); };
+  audio.play().catch(e => addMessage(`Audio play error: ${e.message}`));
+  audioChunks = [];
+}
+
+// ── Skills Dashboard ──
+function renderSkills(skills) {
+  const grid = document.getElementById('skillsGrid');
+  const countEl = document.getElementById('skillsCount');
+  const active = skills.filter(s => s.enabled).length;
+  countEl.textContent = `${active}/${skills.length} активны`;
+
+  grid.innerHTML = skills.map(s => `
+    <div class="skill-card ${s.enabled ? '' : 'disabled'}" id="skill-card-${s.id}">
+      <div class="skill-card-header">
+        <span class="skill-icon">${s.icon}</span>
+        <label class="toggle">
+          <input type="checkbox" ${s.enabled ? 'checked' : ''} ${s.id === 'core' ? 'disabled' : ''}
+                 onchange="toggleSkill('${s.id}', this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="skill-name">${s.name}</div>
+      <div class="skill-desc">${s.description}</div>
+      <div class="skill-meta">
+        <span class="skill-version">v${s.version}</span>
+        <span class="skill-category">${s.category}</span>
+      </div>
+      <div class="skill-status ${s.enabled ? '' : 'off'}">${s.enabled ? '● Активен' : '○ Отключён'}</div>
+    </div>
+  `).join('');
+}
+
+function toggleSkill(id, enabled) {
+  if (!ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ type: 'set_skill', skill: id, enabled: enabled }));
+}
+
+// ── Test Dashboard ──
+function runTest() {
+  if (!ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ type: 'run_test', skills: 'all' }));
+}
+
+function runDemo() {
+  // Demo mode: run tests with display animations
+  if (!ws || ws.readyState !== 1) return;
+  display.setState('boot');
+  setTimeout(() => {
+    ws.send(JSON.stringify({ type: 'run_test', skills: 'all' }));
+  }, 2000);
+}
+
+function onTestStart(msg) {
+  testTotal = msg.total;
+  testPassed = 0;
+  document.getElementById('testStatusText').textContent = `Тестирование... 0/${testTotal}`;
+  document.getElementById('testProgressFill').style.width = '0%';
+  document.getElementById('testResults').innerHTML = '';
+  document.getElementById('testLog').innerHTML = '';
+  document.getElementById('btnTestRun').disabled = true;
+  document.getElementById('btnTestDemo').disabled = true;
+  addTestLog('Запуск тестирования навыков...', '');
+}
+
+function onTestProgress(msg) {
+  const results = document.getElementById('testResults');
+
+  const statusIcon = msg.status === 'running' ? '<div class="spinner"></div>'
+    : msg.status === 'passed' ? '✅' : msg.status === 'error' ? '❌' : '⏭️';
+
+  const existingItem = document.getElementById(`test-${msg.skill}`);
+
+  const html = `
+    <div class="test-item ${msg.status}" id="test-${msg.skill}">
+      <span class="test-item-icon">${msg.icon}</span>
+      <div class="test-item-info">
+        <div class="test-item-name">${msg.name}</div>
+        <div class="test-item-detail">${msg.detail || (msg.status === 'running' ? 'Выполняется...' : '')}</div>
+      </div>
+      <span class="test-item-status">${statusIcon}</span>
+      <span class="test-item-time">${msg.duration_ms ? msg.duration_ms + 'ms' : ''}</span>
+    </div>
+  `;
+
+  if (existingItem) {
+    existingItem.outerHTML = html;
+  } else {
+    results.insertAdjacentHTML('beforeend', html);
+  }
+
+  if (msg.status === 'passed') testPassed++;
+
+  const progress = ((msg.index + (msg.status !== 'running' ? 1 : 0.5)) / testTotal * 100);
+  document.getElementById('testProgressFill').style.width = progress + '%';
+  document.getElementById('testStatusText').textContent = `Тестирование... ${msg.index + 1}/${testTotal}`;
+
+  if (msg.status !== 'running') {
+    const cls = msg.status === 'passed' ? 'pass' : 'fail';
+    addTestLog(`[${msg.skill}] ${msg.status.toUpperCase()} ${msg.detail || ''}`, cls);
+  }
+}
+
+function onTestEnd() {
+  const allPassed = testPassed === testTotal;
+  document.getElementById('testStatusText').textContent = allPassed
+    ? `✅ Все тесты пройдены (${testPassed}/${testTotal})`
+    : `⚠️ Пройдено ${testPassed}/${testTotal}`;
+  document.getElementById('testProgressFill').style.width = '100%';
+  document.getElementById('testProgressFill').style.background = allPassed ? '#4ade80' : '#facc15';
+  document.getElementById('btnTestRun').disabled = false;
+  document.getElementById('btnTestDemo').disabled = false;
+  addTestLog(`Тестирование завершено: ${testPassed}/${testTotal}`, allPassed ? 'pass' : 'fail');
+}
+
+function addTestLog(text, cls) {
+  const log = document.getElementById('testLog');
+  const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  log.insertAdjacentHTML('beforeend', `<div class="test-log-entry ${cls}"><span class="time">${time}</span> ${text}</div>`);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ── Audio helpers ──
+function resample(float32Array, srcRate, dstRate) {
+  if (srcRate === dstRate) return float32Array;
+  const ratio = srcRate / dstRate;
+  const newLength = Math.round(float32Array.length / ratio);
+  const result = new Float32Array(newLength);
+  for (let i = 0; i < newLength; i++) {
+    const srcIndex = i * ratio;
+    const low = Math.floor(srcIndex);
+    const high = Math.min(low + 1, float32Array.length - 1);
+    const frac = srcIndex - low;
+    result[i] = float32Array[low] * (1 - frac) + float32Array[high] * frac;
+  }
+  return result;
+}
+
+function float32ToInt16(float32Array) {
+  const int16 = new Int16Array(float32Array.length);
+  for (let i = 0; i < float32Array.length; i++) int16[i] = Math.max(-32768, Math.min(32767, Math.floor(float32Array[i] * 32768)));
+  return int16;
+}
+
+function calcRMS(float32Array) {
+  let sum = 0;
+  for (let i = 0; i < float32Array.length; i++) sum += float32Array[i] * float32Array[i];
+  return Math.sqrt(sum / float32Array.length);
+}
+
+// ── VAD-based microphone ──
+async function toggleMic() { if (isListening) stopListening(); else await startListening(); }
+
+async function startListening() {
+  if (!ws || ws.readyState !== 1) return;
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } });
+    audioContext = new AudioContext();
+    nativeSampleRate = audioContext.sampleRate;
+    const source = audioContext.createMediaStreamSource(mediaStream);
+    scriptNode = audioContext.createScriptProcessor(4096, 1, 1);
+
+    scriptNode.onaudioprocess = (e) => {
+      if (!isListening) return;
+      const float32 = e.inputBuffer.getChannelData(0);
+      const rms = calcRMS(float32);
+      volumeFill.style.width = Math.min(100, rms * 1000) + '%';
+
+      if (rms > VAD_THRESHOLD) {
+        if (!isSpeaking) {
+          isSpeaking = true;
+          btnMic.classList.add('speaking');
+          btnMic.textContent = 'REC';
+          ws.send(JSON.stringify({ type: 'audio_start' }));
+          addMessage('Speech detected...');
+          display.setListening();
+        }
+        clearTimeout(silenceTimer);
+        silenceTimer = null;
+        const resampled = resample(float32, nativeSampleRate, TARGET_SAMPLE_RATE);
+        ws.send(float32ToInt16(resampled).buffer);
+      } else if (isSpeaking) {
+        const resampled = resample(float32, nativeSampleRate, TARGET_SAMPLE_RATE);
+        ws.send(float32ToInt16(resampled).buffer);
+        if (!silenceTimer) {
+          silenceTimer = setTimeout(() => {
+            isSpeaking = false;
+            btnMic.classList.remove('speaking');
+            btnMic.textContent = 'ON';
+            ws.send(JSON.stringify({ type: 'audio_end' }));
+            addMessage('Processing...');
+            silenceTimer = null;
+          }, SILENCE_TIMEOUT_MS);
+        }
+      }
+    };
+
+    source.connect(scriptNode);
+    scriptNode.connect(audioContext.destination);
+    isListening = true;
+    isSpeaking = false;
+    btnMic.classList.add('listening');
+    btnMic.textContent = 'ON';
+    addMessage('Listening... just speak');
+  } catch (e) { addMessage(`Mic error: ${e.message}`); }
+}
+
+const EMOTION_EMOJI = { happy: '😊', sad: '😢', angry: '😠', neutral: '😐', surprised: '😲', fear: '😨' };
+
+function updateEmotionIndicator(msg) {
+  const el = document.getElementById('emotionIndicator');
+  const emoji = EMOTION_EMOJI[msg.primary] || '😐';
+  const pct = Math.round((msg.intensity || 0.5) * 100);
+  el.innerHTML = `<span class="emoji">${emoji}</span> ${msg.primary} ${pct}% · ${msg.intent || ''}`;
+}
+
+function sendOptions() {
+  if (!ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({ type: 'set_options', options: { internet: document.getElementById('optInternet').checked, model: document.getElementById('optModel').value } }));
+}
+
+function stopListening() {
+  if (isSpeaking && ws && ws.readyState === 1) { ws.send(JSON.stringify({ type: 'audio_end' })); addMessage('Processing...'); }
+  isListening = false; isSpeaking = false; clearTimeout(silenceTimer); silenceTimer = null;
+  btnMic.classList.remove('listening', 'speaking'); btnMic.textContent = 'MIC'; volumeFill.style.width = '0%';
+  if (scriptNode) { scriptNode.disconnect(); scriptNode = null; }
+  if (audioContext) { audioContext.close(); audioContext = null; }
+  if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+}
+</script>
+</body>
+</html>
