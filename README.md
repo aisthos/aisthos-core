@@ -33,14 +33,14 @@ python -m meowbot.server
 ## Архитектура
 
 ```
-┌─────────────────────────────────────────────┐
+┌─────────────────────────────────────────-────┐
 │              AisthOS Core (Python)           │
 │                                              │
-│  ┌──────────┐  ┌───────────┐  ┌──────────┐  │
-│  │ AudioAgent│  │DisplayAgent│  │  Skills  │  │
-│  │ STT → LLM│  │ 14 эмоций │  │ emotion  │  │
+│  ┌──────────┐  ┌───────-────┐  ┌──────────┐  │
+│  │AudioAgent│  │DisplayAgent│  │  Skills  │  │
+│  │ STT → LLM│  │ 14 эмоций  │  │ emotion  │  │
 │  │ → TTS    │  │ touch/sleep│  │ reminder │  │
-│  └────┬─────┘  └─────┬─────┘  │ search   │  │
+│  └────┬─────┘  └──-───┬─────┘  │ search   │  │
 │       │               │        └──────────┘  │
 │  ┌────┴───────────────┴──────────────────┐   │
 │  │         BackendSwitcher               │   │
@@ -55,7 +55,7 @@ python -m meowbot.server
                    │ WebSocket
         ┌──────────┴──────────┐
         │   ESP32 устройство  │
-        │  (EchoEar/StackChan) │
+        │ (EchoEar/StackChan) │
         │  mic + speaker +    │
         │  display + touch    │
         └─────────────────────┘
