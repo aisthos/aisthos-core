@@ -2,6 +2,10 @@
 
 > The brain behind companion robots that grow with you.
 
+<p align="center">
+  <img src="web/demo_emotions.gif" alt="AisthOS Emotions Demo" width="360">
+</p>
+
 AisthOS Core — серверная часть [AisthOS](https://aisthos.dev), открытой платформы для создания эмоциональных AI-компаньонов. Работает на Mac Mini, PC или любом Linux-хосте. Управляет устройствами (ESP32) по WebSocket.
 
 ## Что умеет
