@@ -28,6 +28,7 @@ class BackendType(str, Enum):
     OLLAMA = "ollama"
     CLAUDE = "claude"
     GIGACHAT = "gigachat"
+    DEEPSEEK = "deepseek"
     OFFLINE = "offline"
 
 
@@ -222,6 +223,69 @@ class GigaChatBackend:
             raise
 
 
+DEEPSEEK_API_URL = "https://api.deepseek.com/v1"
+
+
+class DeepSeekBackend:
+    """DeepSeek API — дешёвый облачный бэкенд для Basic-тира подписки.
+
+    OpenAI-совместимый формат. $0.28/$0.42 за 1M токенов — в 11 раз дешевле Claude.
+    Без географических ограничений (доступен из России).
+
+    Получить ключ: platform.deepseek.com
+    """
+
+    def __init__(self):
+        self.api_key = os.getenv("DEEPSEEK_API_KEY", "")
+        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+
+    def is_available(self) -> bool:
+        """Проверяет наличие API ключа."""
+        return bool(self.api_key)
+
+    def generate(self, prompt: str, system: str = "", history: list = None) -> LLMResponse:
+        """Генерация ответа через DeepSeek API (OpenAI-совместимый формат)."""
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        if history:
+            messages.extend(history)
+        messages.append({"role": "user", "content": prompt})
+
+        payload = json.dumps({
+            "model": self.model,
+            "messages": messages,
+            "temperature": 0.7,
+            "max_tokens": 500,
+        }).encode("utf-8")
+
+        req = urllib.request.Request(
+            f"{DEEPSEEK_API_URL}/chat/completions",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            },
+            method="POST",
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read())
+                text = data["choices"][0]["message"]["content"]
+                tokens = data.get("usage", {}).get("total_tokens", 0)
+                logger.info("DeepSeek: %d токенов, модель=%s", tokens, self.model)
+                return LLMResponse(
+                    text=text,
+                    backend=BackendType.DEEPSEEK,
+                    model=self.model,
+                    tokens_used=tokens,
+                )
+        except Exception as e:
+            logger.error("DeepSeek API ошибка: %s", e)
+            raise
+
+
 class BackendSwitcher:
     """Manages LLM backend selection with automatic fallback.
 
@@ -237,10 +301,12 @@ class BackendSwitcher:
     def __init__(self):
         self.ollama = OllamaBackend()
         self.gigachat = GigaChatBackend()
+        self.deepseek = DeepSeekBackend()
         self._forced_backend: Optional[BackendType] = None
         self._ollama_available: Optional[bool] = None
-        logger.info("BackendSwitcher initialized (GigaChat: %s)",
-                     "available" if self.gigachat.is_available() else "not configured")
+        logger.info("BackendSwitcher: GigaChat=%s, DeepSeek=%s",
+                     "да" if self.gigachat.is_available() else "нет",
+                     "да" if self.deepseek.is_available() else "нет")
 
     @property
     def current_backend(self) -> BackendType:
@@ -258,6 +324,9 @@ class BackendSwitcher:
         # Check GigaChat
         if self.gigachat.is_available():
             return BackendType.GIGACHAT
+        # Check DeepSeek
+        if self.deepseek.is_available():
+            return BackendType.DEEPSEEK
         return BackendType.OFFLINE
 
     def force_backend(self, backend: BackendType):
@@ -321,7 +390,17 @@ class BackendSwitcher:
                 response = self._generate_gigachat(prompt, system, history, on_thinking)
                 return response
             except Exception as e:
-                logger.warning("GigaChat failed: %s", e)
+                logger.warning("GigaChat failed, trying DeepSeek: %s", e)
+                backend = BackendType.DEEPSEEK
+
+        if backend == BackendType.DEEPSEEK:
+            if on_thinking:
+                on_thinking(1, 3, "Connecting to DeepSeek...")
+            try:
+                response = self._generate_deepseek(prompt, system, history, on_thinking)
+                return response
+            except Exception as e:
+                logger.warning("DeepSeek failed: %s", e)
 
         # Offline fallback
         return LLMResponse(
@@ -398,6 +477,22 @@ class BackendSwitcher:
 
         return response
 
+    def _generate_deepseek(self, prompt: str, system: str = "", history: list = None,
+                           on_thinking: callable = None) -> LLMResponse:
+        """Генерация через DeepSeek API (дешёвый облачный бэкенд)."""
+        if not self.deepseek.is_available():
+            raise RuntimeError("DeepSeek не настроен")
+
+        if on_thinking:
+            on_thinking(2, 3, "DeepSeek думает...")
+
+        response = self.deepseek.generate(prompt, system, history)
+
+        if on_thinking:
+            on_thinking(3, 3, "Готово!")
+
+        return response
+
     def get_status(self) -> dict:
         """Return current backend status for display."""
         return {
@@ -406,5 +501,6 @@ class BackendSwitcher:
             "ollama_available": self.ollama.is_available(),
             "ollama_model": self.ollama.model,
             "gigachat_available": self.gigachat.is_available(),
-            "backends": ["ollama", "claude", "gigachat", "offline"],
+            "deepseek_available": self.deepseek.is_available(),
+            "backends": ["ollama", "claude", "gigachat", "deepseek", "offline"],
         }

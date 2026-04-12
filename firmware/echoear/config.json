@@ -1,0 +1,10 @@
+{
+    "wifi_ssid": "",
+    "wifi_password": "",
+    "server_host": "192.168.1.100",
+    "server_port": 8765,
+    "auth_token": "",
+    "device_id": "echoear-001",
+    "brightness": 80,
+    "volume": 70
+}
