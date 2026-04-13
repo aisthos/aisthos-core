@@ -67,7 +67,7 @@ SKILL_CATEGORIES = {
 }
 
 
-def _parse_skill_frontmatter(skill_path: Path) -> dict | None:
+def _parse_skill_frontmatter(skill_path: Path):
     """Parse YAML frontmatter from SKILL.md file."""
     md_file = skill_path / "SKILL.md"
     if not md_file.exists():

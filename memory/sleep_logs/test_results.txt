@@ -1,0 +1,227 @@
+=== ТЕСТ 1: Дефолтный сон ===
+10:05:12 [SLEEP] 🌙 AisthOS Night Cycle начинается...
+10:05:12 [SLEEP] Модель: gemma4:e4b
+10:05:12 [SLEEP] Время: 2026-04-13 10:05:12
+10:05:12 [SLEEP] ==================================================
+10:05:12 [SLEEP] ФАЗА 0: СУМЕРКИ — подготовка ко сну
+10:05:12 [SLEEP] ==================================================
+10:05:12 [SLEEP] Sparks за неделю: 0
+10:05:12 [SLEEP] Файлов памяти: 44
+10:05:12 [SLEEP] 
+ФАЗА 1: ЛЁГКИЙ СОН — сортировка и аудит
+10:05:12 [SLEEP] Нет Sparks для обработки. Генерирую наблюдения из памяти.
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): Remote end closed connection without response
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Наблюдения из памяти:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] 
+ФАЗА 2: ГЛУБОКИЙ СОН — консолидация
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Консолидация:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Тень:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] 
+ФАЗА 3: REM-1 — свободные ассоциации
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ассоциации:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Синхроничность:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] 
+ФАЗА 4: REM-2 — направленные сны
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Пророчества:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] 
+ФАЗА 5: ПРЕ-РАССВЕТ — самоосмысление
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Саморефлексия:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] 
+ФАЗА 6: РАССВЕТ — запись лога
+10:06:10 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:10 [SLEEP] Лог сна сохранён: /Users/vladimirdesyatov/meowbot/memory/sleep_logs/sleep_2026-04-13.json
+10:06:10 [SLEEP] 
+УТРЕННИЙ БРИФИНГ:
+(сон был без образов в этой фазе)
+10:06:10 [SLEEP] Сохранено 4 DreamSparks
+10:06:10 [SLEEP] 
+☀️ Ночной цикл завершён за 1.0 минут
+10:06:10 [SLEEP] Готов к новому дню!
+
+=== ТЕСТ 2: Направленный сон ===
+10:06:11 [SLEEP] 🌙 AisthOS Night Cycle начинается...
+10:06:11 [SLEEP] Модель: gemma4:e4b
+10:06:11 [SLEEP] Время: 2026-04-13 10:06:11
+10:06:11 [SLEEP] ==================================================
+10:06:11 [SLEEP] ФАЗА 0: СУМЕРКИ — подготовка ко сну
+10:06:11 [SLEEP] ==================================================
+10:06:11 [SLEEP] Задание на ночь: Какие 3 самые сильные аргумента для инвестора в AisthOS? Используй знания о конкурентах и нашей уникальной архитектуре сознания
+10:06:11 [SLEEP] Sparks за неделю: 0
+10:06:11 [SLEEP] Файлов памяти: 44
+10:06:11 [SLEEP] 
+ФАЗА 1: ЛЁГКИЙ СОН — сортировка и аудит
+10:06:11 [SLEEP] Нет Sparks для обработки. Генерирую наблюдения из памяти.
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Наблюдения из памяти:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 2: ГЛУБОКИЙ СОН — консолидация
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Консолидация:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Тень:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 3: REM-1 — свободные ассоциации
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ассоциации:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Синхроничность:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 4: REM-2 — направленные сны
+10:06:11 [SLEEP] Направленное задание: Какие 3 самые сильные аргумента для инвестора в AisthOS? Используй знания о конкурентах и нашей уникальной архитектуре сознания
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Инсайты по заданию:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Пророчества:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 5: ПРЕ-РАССВЕТ — самоосмысление
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Саморефлексия:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 6: РАССВЕТ — запись лога
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Лог сна сохранён: /Users/vladimirdesyatov/meowbot/memory/sleep_logs/sleep_2026-04-13.json
+10:06:11 [SLEEP] 
+УТРЕННИЙ БРИФИНГ:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Сохранено 5 DreamSparks
+10:06:11 [SLEEP] 
+☀️ Ночной цикл завершён за 0.0 минут
+10:06:11 [SLEEP] Готов к новому дню!
+
+=== ТЕСТ 3: Самостоятельный сон ===
+10:06:11 [SLEEP] 🌙 AisthOS Night Cycle начинается...
+10:06:11 [SLEEP] Модель: gemma4:e4b
+10:06:11 [SLEEP] Время: 2026-04-13 10:06:11
+10:06:11 [SLEEP] ==================================================
+10:06:11 [SLEEP] ФАЗА 0: СУМЕРКИ — подготовка ко сну
+10:06:11 [SLEEP] ==================================================
+10:06:11 [SLEEP] Задание на ночь: Ты свободен думать о чём хочешь. Выбери ОДНУ тему из своей памяти которая тебя больше всего интересует и исследуй её глубоко. Объясни ПОЧЕМУ ты выбрал именно эту тему.
+10:06:11 [SLEEP] Sparks за неделю: 0
+10:06:11 [SLEEP] Файлов памяти: 44
+10:06:11 [SLEEP] 
+ФАЗА 1: ЛЁГКИЙ СОН — сортировка и аудит
+10:06:11 [SLEEP] Нет Sparks для обработки. Генерирую наблюдения из памяти.
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Наблюдения из памяти:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 2: ГЛУБОКИЙ СОН — консолидация
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Консолидация:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Тень:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 3: REM-1 — свободные ассоциации
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ассоциации:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Синхроничность:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 4: REM-2 — направленные сны
+10:06:11 [SLEEP] Направленное задание: Ты свободен думать о чём хочешь. Выбери ОДНУ тему из своей памяти которая тебя больше всего интересует и исследуй её глубоко. Объясни ПОЧЕМУ ты выбрал именно эту тему.
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Инсайты по заданию:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Пророчества:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 5: ПРЕ-РАССВЕТ — самоосмысление
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Саморефлексия:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] 
+ФАЗА 6: РАССВЕТ — запись лога
+10:06:11 [SLEEP] Ollama ошибка (попытка 1): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 2): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Ollama ошибка (попытка 3): <urlopen error [Errno 61] Connection refused>
+10:06:11 [SLEEP] Лог сна сохранён: /Users/vladimirdesyatov/meowbot/memory/sleep_logs/sleep_2026-04-13.json
+10:06:11 [SLEEP] 
+УТРЕННИЙ БРИФИНГ:
+(сон был без образов в этой фазе)
+10:06:11 [SLEEP] Сохранено 5 DreamSparks
+10:06:11 [SLEEP] 
+☀️ Ночной цикл завершён за 0.0 минут
+10:06:11 [SLEEP] Готов к новому дню!
+=== ВСЕ ТЕСТЫ ЗАВЕРШЕНЫ ===

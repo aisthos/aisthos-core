@@ -182,7 +182,7 @@ class MeowBotAgent:
         text_parts = [block.text for block in message.content if block.type == "text"]
         return " ".join(text_parts) if text_parts else "Мяу?"
 
-    def _check_pending_reminders(self) -> str | None:
+    def _check_pending_reminders(self):
         """Check for due reminders and return announcement if any."""
         reminders = self.memory.get_pending_reminders()
         if not reminders:

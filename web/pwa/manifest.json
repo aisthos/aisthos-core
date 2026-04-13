@@ -1,0 +1,17 @@
+{
+    "name": "AisthOS",
+    "short_name": "AisthOS",
+    "description": "AI companion that grows with you",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a1a",
+    "theme_color": "#7C6AF7",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ]
+}
